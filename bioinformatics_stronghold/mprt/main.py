@@ -12,8 +12,8 @@ We assume that the fasta file contains no illegal character. So any character no
 """
 n_glycosylation_regex ="N[^P][ST][^P]"
 
+#TODO make regex more efficient with compile?
 #TODO more doctests?
-#TODO make sure uniprot ids such as XXXX_HUMAN_BLABLA are stripped and only XXXX is used.
 
 def read_uniprot_id_file(file) -> list:
 	"""
@@ -22,7 +22,7 @@ def read_uniprot_id_file(file) -> list:
 	DOCTSRING:
 	>>> file = "test.txt"
 	>>> read_uniprot_id_file(file)
-	['A2Z669', 'B5ZC00', 'P07204', 'P20840']
+	['A2Z669', 'B5ZC00', 'P07204_TRBM_HUMAN', 'P20840_SAG1_YEAST']
 	"""
 	# Open file for reading:
 	file = open(file, "r")
@@ -47,8 +47,9 @@ def retrieve_fasta(uniprot_id_list: list) -> dict:
 
 	# Looping over every uniprot id and obtaining the fasta file through urllib
 	for id in uniprot_id_list:
+		# Strip the id of '_..._...' characters such that only the identifier is used:
 		fasta_sequence = ""  # Empty string to store the sequence
-		with urlopen(url.format(id)) as fasta_file:
+		with urlopen(url.format(id.split("_", 1)[0])) as fasta_file:
 			for line in fasta_file:
 				# The file is read in bytes mode. We need to decode it first:
 				# rstrip() to remove any newline characters at end of string.
@@ -83,15 +84,21 @@ def find_motif(motif: str, protein_sequence: str) -> list:
 def main():
 	# Capture the uniprot ID file from the argument passed in the CL.
 	uniprot_id_file = sys.argv[1]
+	
+	# Read the uniprot id file and store as list
 	ids = read_uniprot_id_file(uniprot_id_file)
+
+	# Retrieve the sequences of each id and store in dictionary
 	sequences = retrieve_fasta(ids)
+	
+	# Iterate over the sequences and look for the motif
 	for id,sequence in sequences.items():
 		start_indices = find_motif(n_glycosylation_regex, sequence)
 		if len(start_indices) > 0:
+			# If the list is not empty, print the start indices of each motif in the sequence with spaces:
 			start_indices_string = ' '.join(map(str, start_indices))
 			print(f'{id}\n{start_indices_string}')	 
 		
-	
 	
 if __name__ == "__main__":
 	import doctest
