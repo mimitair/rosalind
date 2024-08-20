@@ -26,9 +26,8 @@ def main():
     
 def parse_sequences(fasta_file) -> dict:
     # This function reads a fasta file and returns the sequences and their ID in a dictionary format
-    # TODO:
-    # Make sure the same ID cannot occur twice in the dict.
-    # Check for correct input (only A, G, C and T)
+    #TODO Make sure the same ID cannot occur twice in the dict.
+    #TODO Check for correct input (only A, G, C and T)
 
     # Initiate empty dictionary:
     sequences = {}
