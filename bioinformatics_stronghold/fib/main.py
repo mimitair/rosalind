@@ -1,5 +1,5 @@
 """
-This script takes asks for 2 positive integers n and k.
+This script asks for 2 positive integers n and k.
 n: amount of months in the future. (<= 40)
 k: amount of rabbit pairs that each rabbit pair of reproductive age produces (<= 5)
 
